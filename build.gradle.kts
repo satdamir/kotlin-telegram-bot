@@ -1,3 +1,4 @@
+
 buildscript {
     repositories {
         mavenCentral()
@@ -5,14 +6,13 @@ buildscript {
 }
 
 plugins {
-    alias libs.plugins.kotlin.jvm apply false
+    idea
+    alias(libs.plugins.kotlin.jvm).apply(false)
 }
 
 allprojects {
-    apply from: "$rootDir/ktlint.gradle"
-
-    group 'com.github.kotlintelegrambot'
-    version '0.3.4'
+    group = "com.github.kotlintelegrambot"
+    version =  "0.3.4"
 
     repositories {
         mavenCentral()
