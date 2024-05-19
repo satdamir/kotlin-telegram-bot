@@ -11,8 +11,8 @@ plugins {
 }
 
 allprojects {
-    group = "com.github.kotlintelegrambot"
-    version =  "0.3.4"
+    group = "es.ollie.tech"
+    version =  "1.0.0"
 
     repositories {
         mavenCentral()

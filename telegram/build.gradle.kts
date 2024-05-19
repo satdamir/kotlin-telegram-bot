@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URI
 
 buildscript {
     repositories {
@@ -13,8 +14,8 @@ plugins {
     `maven-publish`
 }
 
-group="com.github.kotlintelegrambot"
-version="6.1.0"
+group = "es.ollie.tech"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -61,3 +62,23 @@ java.targetCompatibility = JavaVersion.VERSION_1_8
 tasks.test {
     useJUnitPlatform()
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+
+    repositories {
+        maven {
+            credentials {
+                username = if (project.hasProperty("art_username")) project.property("art_username").toString() else ""
+                password = if (project.hasProperty("art_password")) project.property("art_password").toString() else ""
+            }
+            url = URI(if (project.hasProperty("art_url")) project.property("art_url").toString() else "")
+        }
+
+    }
+}
+
