@@ -246,7 +246,7 @@ fun anyVideo(
     height: Int = ANY_HEIGHT,
     thumb: PhotoSize? = null,
     mimeType: String? = null,
-    fileSize: Int? = null,
+    fileSize: Long? = null,
     duration: Int = ANY_DURATION,
     fileName: String? = null,
 ): Video = Video(

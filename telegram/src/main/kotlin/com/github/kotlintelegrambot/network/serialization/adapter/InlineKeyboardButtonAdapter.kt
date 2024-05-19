@@ -18,9 +18,14 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.google.gson.annotations.SerializedName
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.lang.reflect.Type
 
-internal class InlineKeyboardButtonAdapter : JsonSerializer<InlineKeyboardButton>, JsonDeserializer<InlineKeyboardButton> {
+internal class InlineKeyboardButtonAdapter : JsonSerializer<InlineKeyboardButton>,
+    JsonDeserializer<InlineKeyboardButton> {
+
+    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     private class InlineKeyboardButtonDto(
         val text: String,
@@ -47,6 +52,7 @@ internal class InlineKeyboardButtonAdapter : JsonSerializer<InlineKeyboardButton
         is Pay -> context.serialize(src, Pay::class.java)
         is WebApp -> context.serialize(src, WebApp::class.java)
         is LoginUrlButtonType -> context.serialize(src, LoginUrlButtonType::class.java)
+        is InlineKeyboardButton.Unknown -> error("unknown button must not be serialized")
     }
 
     override fun deserialize(
@@ -68,11 +74,15 @@ internal class InlineKeyboardButtonAdapter : JsonSerializer<InlineKeyboardButton
                     text,
                     switchInlineQueryCurrentChat,
                 )
+
                 callbackGame != null -> CallbackGameButtonType(text, callbackGame)
                 pay != null -> Pay(text)
                 webApp != null -> WebApp(text, webApp)
                 loginUrl != null -> LoginUrlButtonType(text, loginUrl)
-                else -> error("unsupported inline keyboard button $inlineKeyboardButtonDto")
+                else -> {
+                    logger.error("Unsupported inline keyboard button $inlineKeyboardButtonDto")
+                    InlineKeyboardButton.Unknown(text, "Unsupported inline keyboard button $inlineKeyboardButtonDto")
+                }
             }
         }
     }

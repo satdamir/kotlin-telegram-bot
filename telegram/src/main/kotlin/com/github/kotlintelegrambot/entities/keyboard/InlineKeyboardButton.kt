@@ -25,6 +25,11 @@ data class LoginUrl(
 sealed class InlineKeyboardButton {
     abstract val text: String
 
+    data class Unknown(
+        override val text: String,
+        val details: String
+    ) : InlineKeyboardButton()
+
     /**
      * HTTP or tg:// url to be opened when button is pressed.
      */

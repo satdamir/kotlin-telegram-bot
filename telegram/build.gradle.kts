@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "es.ollie.tech"
-version = "1.0.0"
+version = "1.0.2"
 
 repositories {
     mavenCentral()
@@ -23,10 +23,11 @@ repositories {
 
 dependencies {
     // Networking
-    implementation(libs.bundles.retrofit)
-    implementation(libs.okhttp3.logging.interceptor)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.jsr305)
+    api(libs.bundles.retrofit)
+    api(libs.okhttp3.logging.interceptor)
+    api(libs.kotlinx.coroutines.core)
+    api(libs.jsr305)
+    api("ch.qos.logback:logback-classic:1.4.5")
 
     // Testing
     testImplementation(libs.bundles.junit)

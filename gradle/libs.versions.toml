@@ -1,7 +1,7 @@
 [versions]
 assertj = "3.11.1"
 junit = "5.5.1"
-kotlin = "1.9.10"
+kotlin = "1.7.21"
 kotlinx-binary-compatibility-validator = "0.13.2"
 kotlin-coroutines = "1.6.2"
 ktor = "1.6.3"
