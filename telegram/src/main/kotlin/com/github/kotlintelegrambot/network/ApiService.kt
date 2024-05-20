@@ -26,6 +26,7 @@ import com.github.kotlintelegrambot.entities.polls.PollType
 import com.github.kotlintelegrambot.entities.stickers.MaskPosition
 import com.github.kotlintelegrambot.entities.stickers.StickerSet
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -48,6 +49,14 @@ internal interface ApiService {
         @Query("timeout") timeout: Int?,
         @Query("allowed_updates") allowedUpdates: String?,
     ): Call<Response<List<Update>>>
+
+    @GET("getUpdates")
+    fun getUpdatesJson(
+        @Query("offset") offset: Long?,
+        @Query("limit") limit: Int?,
+        @Query("timeout") timeout: Int?,
+        @Query("allowed_updates") allowedUpdates: String?,
+    ): Call<Response<List<JsonObject>>>
 
     @FormUrlEncoded
     @POST("setWebhook")

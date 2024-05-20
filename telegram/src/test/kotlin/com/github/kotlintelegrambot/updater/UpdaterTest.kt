@@ -6,6 +6,8 @@ import com.github.kotlintelegrambot.errors.RetrieveUpdatesError
 import com.github.kotlintelegrambot.network.ApiClient
 import com.github.kotlintelegrambot.types.DispatchableObject
 import com.github.kotlintelegrambot.types.TelegramBotResult
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
 import io.mockk.every
@@ -29,6 +31,7 @@ class UpdaterTest {
         updatesChannel = mockUpdatesQueue,
         apiClient = mockApiClient,
         botTimeout = BOT_TIMEOUT,
+        gson = Gson()
     )
 
     @Test
@@ -39,17 +42,17 @@ class UpdaterTest {
         val updates2 = emptyList<Update>()
         val updates3 = (3L until 6).map { anyUpdate(updateId = it) }
         val updates4 = (6L until 18).map { anyUpdate(updateId = it) }
-        givenGetUpdatesResults(updates1, updates2, updates3, updates4)
+        givenGetUpdatesResults(updates1.toJsonObjects(), updates2.toJsonObjects(), updates3.toJsonObjects(), updates4.toJsonObjects())
 
         looper.loopIterations = 4
         sut.startPolling()
         advanceUntilIdle()
 
         verifyOrder {
-            mockApiClient.getUpdates(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
-            mockApiClient.getUpdates(offset = 3, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
-            mockApiClient.getUpdates(offset = 3, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
-            mockApiClient.getUpdates(offset = 6, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = 3, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = 3, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = 6, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
         }
     }
 
@@ -73,10 +76,10 @@ class UpdaterTest {
         advanceUntilIdle()
 
         verifyOrder {
-            mockApiClient.getUpdates(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
-            mockApiClient.getUpdates(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
-            mockApiClient.getUpdates(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
-            mockApiClient.getUpdates(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
         }
     }
 
@@ -91,10 +94,10 @@ class UpdaterTest {
         val updates3 = (3L until 6).map { anyUpdate(updateId = it) }
         givenGetUpdatesResults(
             error1,
-            updates1.asResult(),
-            updates2.asResult(),
+            updates1.toJsonObjects().asResult(),
+            updates2.toJsonObjects().asResult(),
             error2,
-            updates3.asResult(),
+            updates3.toJsonObjects().asResult(),
         )
 
         looper.loopIterations = 5
@@ -102,11 +105,11 @@ class UpdaterTest {
         advanceUntilIdle()
 
         verifyOrder {
-            mockApiClient.getUpdates(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
-            mockApiClient.getUpdates(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
-            mockApiClient.getUpdates(offset = 3, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
-            mockApiClient.getUpdates(offset = 3, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
-            mockApiClient.getUpdates(offset = 3, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = null, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = 3, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = 3, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
+            mockApiClient.getUpdatesJson(offset = 3, limit = null, timeout = BOT_TIMEOUT, allowedUpdates = null)
         }
     }
 
@@ -118,7 +121,7 @@ class UpdaterTest {
         val updates2 = emptyList<Update>()
         val updates3 = (3L until 6).map { anyUpdate(updateId = it) }
         val updates4 = (6L until 8).map { anyUpdate(updateId = it) }
-        givenGetUpdatesResults(updates1, updates2, updates3, updates4)
+        givenGetUpdatesResults(updates1.toJsonObjects(), updates2.toJsonObjects(), updates3.toJsonObjects(), updates4.toJsonObjects())
 
         looper.loopIterations = 4
         sut.startPolling()
@@ -146,10 +149,10 @@ class UpdaterTest {
         val updates3 = (3L until 6).map { anyUpdate(updateId = it) }
         givenGetUpdatesResults(
             error1,
-            updates1.asResult(),
+            updates1.toJsonObjects().asResult(),
             error2,
-            updates2.asResult(),
-            updates3.asResult(),
+            updates2.toJsonObjects().asResult(),
+            updates3.toJsonObjects().asResult(),
         )
 
         looper.loopIterations = 5
@@ -202,21 +205,26 @@ class UpdaterTest {
         assertEquals("521 WUT", queuedErrors[3].getErrorMessage())
     }
 
-    private fun givenGetUpdatesResults(vararg result: List<Update>) {
+    private fun givenGetUpdatesResults(vararg result: List<JsonObject>) {
         every {
-            mockApiClient.getUpdates(any(), any(), any(), any())
+            mockApiClient.getUpdatesJson(any(), any(), any(), any())
         }.returnsMany(
             result.map { it.asResult() },
         )
     }
 
-    private fun givenGetUpdatesResults(vararg result: TelegramBotResult<List<Update>>) {
+    private fun givenGetUpdatesResults(vararg result: TelegramBotResult<List<JsonObject>>) {
         every {
-            mockApiClient.getUpdates(any(), any(), any(), any())
+            mockApiClient.getUpdatesJson(any(), any(), any(), any())
         }.returnsMany(result.toList())
     }
 
-    private fun List<Update>.asResult() = TelegramBotResult.Success(this)
+    private fun Update.toJsonObject() = Gson().toJsonTree(this).asJsonObject
+
+    private fun List<Update>.toJsonObjects() = this.map { it.toJsonObject() }
+
+    private fun List<JsonObject>.asResult() = TelegramBotResult.Success(this)
+
 
     private companion object {
         const val BOT_TIMEOUT = 50

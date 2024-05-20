@@ -87,7 +87,7 @@ class Bot private constructor(
             val updatesQueue = Channel<DispatchableObject>()
             val looper = CoroutineLooper(Dispatchers.IO)
             val apiClient = ApiClient(token, apiUrl, timeout, logLevel, proxy, gson)
-            val updater = Updater(looper, updatesQueue, apiClient, timeout)
+            val updater = Updater(looper, updatesQueue, apiClient, timeout, gson)
             val dispatcher = Dispatcher(
                 updatesChannel = updatesQueue,
                 logLevel = logLevel,

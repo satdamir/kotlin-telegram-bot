@@ -45,6 +45,7 @@ import com.github.kotlintelegrambot.network.retrofit.converters.InputMediaConver
 import com.github.kotlintelegrambot.network.serialization.GsonFactory
 import com.github.kotlintelegrambot.types.TelegramBotResult
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -114,6 +115,18 @@ internal class ApiClient(
         timeout: Int?,
         allowedUpdates: List<String>?,
     ): TelegramBotResult<List<Update>> = service.getUpdates(
+        offset,
+        limit,
+        timeout,
+        allowedUpdates?.serialize(),
+    ).runApiOperation()
+
+    fun getUpdatesJson(
+        offset: Long?,
+        limit: Int?,
+        timeout: Int?,
+        allowedUpdates: List<String>?,
+    ): TelegramBotResult<List<JsonObject>> = service.getUpdatesJson(
         offset,
         limit,
         timeout,
