@@ -73,13 +73,14 @@ publishing {
 
     repositories {
         maven {
-            credentials {
-                username = if (project.hasProperty("art_username")) project.property("art_username").toString() else ""
-                password = if (project.hasProperty("art_password")) project.property("art_password").toString() else ""
-            }
-            url = URI(if (project.hasProperty("art_url")) project.property("art_url").toString() else "")
-        }
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/satdamir/kotlin-telegram-bot")
 
+            credentials {
+                username = if (project.hasProperty("ghp_username")) project.property("ghp_username").toString() else ""
+                password = if (project.hasProperty("ghp_password")) project.property("ghp_password").toString() else ""
+            }
+        }
     }
 }
 
