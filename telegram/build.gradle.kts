@@ -73,8 +73,7 @@ publishing {
 
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/satdamir/kotlin-telegram-bot")
+            url = uri("https://maven.pkg.github.com/satdamir/ollie")
 
             credentials {
                 username = if (project.hasProperty("ghp_username")) project.property("ghp_username").toString() else ""
